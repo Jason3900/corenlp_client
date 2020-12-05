@@ -23,9 +23,8 @@ Sometimes you may want to get directly tokenized (pos, ner) result in list forma
 from corenlp_client import CoreNLP
 # max_mem: max memory use, default is 4. threads: num of threads to use, defualt is num of cpu cores.
 annotator = CoreNLP(annotators="tokenize", corenlp_dir="/path/to/corenlp", local_port=9000, max_mem=4, threads=2)
-# you can set `clean_text=True` to remove extra spaces in your text
 # by setting `ssplit=False`, you'll get a list of tokens without splitting sentences
-tokenized_text = annotator.tokenize(data, ssplit=False, clean_text=True)
+tokenized_text = annotator.tokenize(data, ssplit=False)
 pos_tags = annotator.pos_tag(data)
 ners = annotator.ner(data)
 annotator.close()

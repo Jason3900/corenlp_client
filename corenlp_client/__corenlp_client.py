@@ -9,6 +9,7 @@ import subprocess
 import time
 import shlex
 import multiprocessing
+from urllib import parse
 
 class CoreNLP:
     def __init__(self, url=None, lang="en", annotators=None, corenlp_dir=None, local_port=9000, max_mem=4, threads=multiprocessing.cpu_count()):
@@ -20,7 +21,6 @@ class CoreNLP:
         if annotators and self._check_annotators_format(annotators):
             self.annotators = annotators
         else:
-            warnings.warn("param format of annotator is incorrect or not specified, thus default is used instead! ")
             self.annotators = ",".join(self.annotators_list)
         
         if corenlp_dir:
@@ -30,6 +30,7 @@ class CoreNLP:
                 raise OSError("please check corenlp local path is correct! ")
             if self._launch_local_server(corenlp_dir, local_port, max_mem, threads):
                 self.url = f"http://127.0.0.1:{local_port}"
+                self._request_corenlp(data="", annotators=self.annotators, timeout=150000)
         
     def __enter__(self):
         return self
@@ -40,6 +41,11 @@ class CoreNLP:
             self.corenlp_subprocess.wait()
         # os.killpg(os.getpgid(self.corenlp_subprocess.pid), 9)
 
+    def __del__(self):
+        if self.corenlp_subprocess:
+            self.corenlp_subprocess.kill()
+            self.corenlp_subprocess.wait()
+    
     def _check_annotators_format(self, annotators):
         annotators = annotators.split(",")
         for i in annotators:
@@ -77,34 +83,18 @@ class CoreNLP:
         time.sleep(1)
         return True
 
-    @staticmethod
-    def _clean_text(text):
-        cleaned_text = []
-        text = text.split("\n")
-        for line in text:
-            line = line.strip()
-            line = re.sub(r"\r+", "", line)
-            line = re.sub(r"[ \u3000\t]+", " ", line)
-            cleaned_text.append(line)
-        cleaned_text = "\n".join(cleaned_text)
-        return cleaned_text
-
-    def _request_corenlp(self, data, annotators):
+    def _request_corenlp(self, data, annotators, timeout=30):
         params = {"properties": '{"annotators": "%s"}'  % annotators, "pipelineLanguage": self.lang}
-        res = requests.post(url=self.url, params=params, data=data.encode("utf8"), timeout=600)
+        res = requests.post(url=self.url, params=params, data=parse.quote(data), timeout=timeout)
         ann_result = res.json()
         return ann_result
 
-    def annotate(self, data, clean_text=True):
-        if clean_text:
-            data = self._clean_text(data)
+    def annotate(self, data):
         ann_result = self._request_corenlp(data, self.annotators)
         annotation = Annotation(ann_result)
         return annotation
 
-    def tokenize(self, data, ssplit=True, clean_text=False):
-        if clean_text:
-            data = self._clean_text(data)
+    def tokenize(self, data, ssplit=True):
         if ssplit:
             annotators = "tokenize,ssplit"
         else:
@@ -116,18 +106,14 @@ class CoreNLP:
             annotation = [token["word"] for token in ann_result["tokens"]]
         return annotation
 
-    def pos_tag(self, data, clean_text=False):
+    def pos_tag(self, data):
         annotators = "tokenize,ssplit,pos"
-        if clean_text:
-            data = self._clean_text(data)
         ann_result = self._request_corenlp(data, annotators)
         annotation = [[token["pos"] for token in sent["tokens"]] for sent in ann_result["sentences"]]
         return annotation
 
-    def ner(self, data, clean_text=False):
+    def ner(self, data):
         annotators = "tokenize,ssplit,pos,ner"
-        if clean_text:
-            data = self._clean_text(data)
         ann_result = self._request_corenlp(data, annotators)
         annotation = []
         for sent in ann_result["sentences"]:

@@ -2,12 +2,13 @@
 
 ## prerequisites
 [Java 8](https://www.oracle.com/java/technologies/javase-downloads.html)
+
 Python >= 3.6
 
 ## Description
 A simple, user-friendly python wrapper for Stanford CoreNLP, an nlp tool for natural language processing in Java. 
 CoreNLP provides a lingustic annotaion pipeline, which means users can use it to tokenize, ssplit(sentence split), POS, NER, constituency parse, dependency parse, openie etc. However, it's written in Java, which can not be interacted directly with Python programs. Therefore, we've developed a CoreNLP client tool in Python.
-The corenlp-client can be used to start a CoreNLP Server once you've followed the official release [link](https://stanfordnlp.github.io/CoreNLP/download.html) and download necessary packages and corresponding models. Or, if a server is already started, the only thing you need to do is to specify the server's url, and call the annoate method. 
+The corenlp-client can be used to start a CoreNLP Server once you've followed the official [release](https://stanfordnlp.github.io/CoreNLP/download.html) and download necessary packages and corresponding models. Or, if a server is already started, the only thing you need to do is to specify the server's url, and call the annoate method. 
 
 ## Installation
 pip install corenlp_client

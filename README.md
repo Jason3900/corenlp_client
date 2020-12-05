@@ -75,8 +75,9 @@ print(anno.pretty_print_tree(anno.parse_tree[0])) # pretty print parse tree's st
 
 **Extra Notes**
 
-Note that if you choose to start server locally, it'll take a while to load models for the first time.
-Also, if "with" is not used, remember to call close() method to stop the Java CoreNLP server. 
+- If you choose to start server locally, it'll take a while to load models for the first time you annotate a sentence.
+- For timeout error, a simple retry may be useful.
+- Also, if "with" is not used, remember to call close() method to stop the Java CoreNLP server. 
 
 
 

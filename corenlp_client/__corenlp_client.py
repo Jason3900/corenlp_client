@@ -91,7 +91,7 @@ class CoreNLP:
 
     def _request_corenlp(self, data, annotators):
         params = {"properties": '{"annotators": "%s"}'  % annotators, "pipelineLanguage": self.lang}
-        res = requests.post(url=self.url, params=params, data=data.encode("utf8"), timeout=60)
+        res = requests.post(url=self.url, params=params, data=data.encode("utf8"), timeout=600)
         ann_result = res.json()
         return ann_result
 

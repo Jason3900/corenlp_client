@@ -129,7 +129,7 @@ class CoreNLP:
         if clean_text:
             data = self._clean_text(data)
         ann_result = self._request_corenlp(data, annotators)
-        annotation = [{idx: (token["ner"], token["normalizedNER"]) for idx, token in enumerate(sent["tokens"]) if token["ner"] != "0"} for sent in ann_result["sentences"]]
+        annotation = [{idx: (token["ner"], token["normalizedNER"]) for idx, token in enumerate(sent["tokens"]) if token["ner"] != "0" and token["normalizedNER"]} for sent in ann_result["sentences"]]
         return annotation
 
     def close(self):

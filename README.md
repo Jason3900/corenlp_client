@@ -46,7 +46,7 @@ with CoreNLP(annotators="tokenize", corenlp_dir="/path/to/corenlp", local_port=9
 You can also use an existing server by providing the url.
 
 ```python
-from corenlp_request import CoreNLP
+from corenlp_client import CoreNLP
 # lang for language, default is en.
 # you can specify annotators to use by passing `annotator="tokenize,ssplit"` args to CoreNLP. If not provided, all available annotators will be used.
 with CoreNLP(url="https://corenlp.run", lang="en") as annotator:
@@ -69,7 +69,7 @@ print(anno.entities) # entitymentions
 print(anno.openie) # openie
 
 print(anno.ann_result) # original server's response format
-print(anno.pretty_print_tree(anno.parse_tree[0])) # pretty print parse tree's structure
+print(annotator.pretty_print_tree(anno.parse_tree[0])) # pretty print parse tree's structure
 ```
 
 **Extra Notes**

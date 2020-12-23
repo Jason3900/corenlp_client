@@ -118,11 +118,18 @@ class CoreNLP:
         annotation = []
         for sent in ann_result["sentences"]:
             sent_ner = []
-            for idx, token in enumerate(sent["tokens"]):
-                if token["ner"] != "O":
-                    sent_ner.append({idx: token["ner"]})
+            if "entitymentions" in sent:
+                for entity in sent["entitymentions"]:
+                    span = (entity["tokenBegin"], entity["tokenEnd"])
+                    ner = entity["ner"]
+                    ner_entity = entity["text"]
+                    sent_ner.append({(ner_entity,span): ner})
             annotation.append(sent_ner)
         return annotation
+
+    @staticmethod
+    def pretty_print_tree(tree):
+        Tree.fromstring(tree).pretty_print()
 
     def close(self):
         if self.corenlp_subprocess:
@@ -165,9 +172,6 @@ class Annotation():
             self.tokens = self.ann_result["tokens"]
         return ann_dict
 
-    @staticmethod
-    def pretty_print_tree(tree):
-        Tree.fromstring(tree).pretty_print()
 
 
 

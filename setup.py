@@ -5,7 +5,7 @@ with open("README.md", "r") as fr:
 
 setuptools.setup(
     name="corenlp_client", # Replace with your own username
-    version="1.0.1",
+    version="1.0.3",
     author="Jason Fang",
     author_email="jasonfang3900@gmail.com",
     description="A python wapper for Stanford CoreNLP, simple and customizable. ",

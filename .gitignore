@@ -1,7 +1,7 @@
 .vscode/
 # Byte-compiled / optimized / DLL files
 corenlp_client/__pycache__/
-
+tmp/
 *.py[cod]
 *$py.class
 

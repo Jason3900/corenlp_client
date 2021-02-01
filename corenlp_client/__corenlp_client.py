@@ -12,12 +12,13 @@ import multiprocessing
 from urllib import parse
 
 class CoreNLP:
-    def __init__(self, url=None, lang="en", annotators=None, corenlp_dir=None, local_port=9000, max_mem=4, threads=multiprocessing.cpu_count()):
+    def __init__(self, url=None, lang="en", annotators=None, corenlp_dir=None, local_port=9000, max_mem=4, threads=multiprocessing.cpu_count(), timeout=150000):
         if url:
             self.url = url.rstrip("/")
         self.annotators_list = ["tokenize","ssplit","pos","ner","parse","depparse","openie"]
         self.lang = lang
         self.corenlp_subprocess = None
+        self.timeout = timeout
         if annotators and self._check_annotators_format(annotators):
             self.annotators = annotators
         else:
@@ -30,7 +31,7 @@ class CoreNLP:
                 raise OSError("please check corenlp local path is correct! ")
             if self._launch_local_server(corenlp_dir, local_port, max_mem, threads):
                 self.url = f"http://127.0.0.1:{local_port}"
-                self._request_corenlp(data="", annotators=self.annotators, timeout=150000)
+                self._request_corenlp(data="", annotators=self.annotators)
         
     def __enter__(self):
         return self
@@ -83,9 +84,9 @@ class CoreNLP:
         time.sleep(1)
         return True
 
-    def _request_corenlp(self, data, annotators, timeout=30):
+    def _request_corenlp(self, data, annotators):
         params = {"properties": '{"annotators": "%s"}'  % annotators, "pipelineLanguage": self.lang}
-        res = requests.post(url=self.url, params=params, data=parse.quote(data), timeout=timeout)
+        res = requests.post(url=self.url, params=params, data=parse.quote(data), timeout=self.timeout)
         ann_result = res.json()
         return ann_result
 
@@ -120,7 +121,7 @@ class CoreNLP:
             sent_ner = []
             if "entitymentions" in sent:
                 for entity in sent["entitymentions"]:
-                    span = (entity["tokenBegin"], entity["tokenEnd"])
+                    span = (entity["characterOffsetBegin"], entity["characterOffsetEnd"])
                     ner = entity["ner"]
                     ner_entity = entity["text"]
                     sent_ner.append({(ner_entity,span): ner})

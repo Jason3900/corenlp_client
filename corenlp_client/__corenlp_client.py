@@ -55,7 +55,7 @@ class CoreNLP:
         return True
 
     def _check_server_status(self):
-        if requests.get(self.url).status_code != 200:
+        if requests.get(self.url, verify=False).status_code != 200:
             raise ConnectionError("please check your network connection, or the corenlp server is started before launching!")
     
     @staticmethod
@@ -86,7 +86,7 @@ class CoreNLP:
 
     def _request_corenlp(self, data, annotators):
         params = {"properties": '{"annotators": "%s"}'  % annotators, "pipelineLanguage": self.lang}
-        res = requests.post(url=self.url, params=params, data=parse.quote(data), timeout=self.timeout)
+        res = requests.post(url=self.url, params=params, data=parse.quote(data), timeout=self.timeout, verify=False)
         ann_result = res.json()
         return ann_result
 
